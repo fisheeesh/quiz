@@ -8,6 +8,7 @@ import axios from 'axios'
 import StartScreen from './components/quiz/ui/StartScreen'
 import Question from './components/quiz/ui/ques/Question'
 import NextButton from './components/quiz/ui/NextButton'
+import Progress from './components/quiz/ui/Progress'
 
 const api = import.meta.env.VITE_API_URL
 const initialState = {
@@ -62,14 +63,16 @@ const quesReducer = (state, action) => {
 }
 
 export default function App() {
-  const [{ questions, status, index, answer }, dispatch] = useReducer(quesReducer, initialState)
+  const [{ questions, status, index, answer, points }, dispatch] = useReducer(quesReducer, initialState)
 
   const numQuestions = questions.length
+
+  const maxPossiblePoints = questions.reduce((total, ques) => total + ques.points, 0)
 
   useEffect(() => {
     const fetchQuestion = async () => {
       try {
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        await new Promise(resolve => setTimeout(resolve, 500))
         let { data } = await axios.get(`${api}/questions`)
         dispatch({ type: 'DATA_RECIEVED', payload: data })
       }
@@ -89,10 +92,14 @@ export default function App() {
         {status === 'loading' && <Loader />}
         {status === 'error' && <Error />}
         {status === 'ready' && <StartScreen dispatch={dispatch} numQuestions={numQuestions} />}
-        {status === 'active' && <>
-          <Question question={questions[index]} dispatch={dispatch} answer={answer} />
-          <NextButton dispatch={dispatch} answer={answer} />
-        </>}
+        {
+          status === 'active' &&
+          <>
+            <Progress index={index} numQuestions={numQuestions} points={points} maxPossiblePoints={maxPossiblePoints} answer={answer} />
+            <Question question={questions[index]} dispatch={dispatch} answer={answer} />
+            <NextButton dispatch={dispatch} answer={answer} />
+          </>
+        }
       </Main>
     </div>
   )
