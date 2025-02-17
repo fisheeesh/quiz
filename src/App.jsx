@@ -1,13 +1,16 @@
 import { useEffect } from 'react'
-import Header from './components/quiz/Header'
-import Main from './components/quiz/Main'
+import Header from './components/quiz/ui/Header'
+import Main from './components/quiz/ui/Main'
+import Loader from './components/quiz/status/Loader'
+import Error from './components/quiz/status/Error'
 import { useReducer } from 'react'
 import axios from 'axios'
+import StartScreen from './components/quiz/ui/StartScreen'
 
 const api = import.meta.env.VITE_API_URL
 const initialState = {
   questions: [],
-  //? User can be in loading or error or ready or active or finished state.
+  //? User can be in loading | error | ready | active | finished state.
   status: 'loading'
 }
 
@@ -23,13 +26,14 @@ const quesReducer = (state, action) => {
 }
 
 export default function App() {
-  const [state, dispatch] = useReducer(quesReducer, initialState)
-  const { questions, status } = state
+  const [{ questions, status }, dispatch] = useReducer(quesReducer, initialState)
+
+  const numQuestions = questions.length
 
   useEffect(() => {
     const fetchQuestion = async () => {
       try {
-        let { data } = await axios.get(`${api}questions`)
+        let { data } = await axios.get(`${api}/questions`)
         dispatch({ type: 'DATA_RECIEVED', payload: data })
       }
       catch (err) {
@@ -45,6 +49,9 @@ export default function App() {
     <div className="app">
       <Header />
       <Main>
+        {status === 'loading' && <Loader />}
+        {status === 'error' && <Error />}
+        {status === 'ready' && <StartScreen numQuestions={numQuestions} />}
       </Main>
     </div>
   )
