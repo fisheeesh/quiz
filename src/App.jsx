@@ -21,7 +21,12 @@ const initialState = {
    * ? So then in the future, when we change that index from zero to one, that should display the next question.
    * $ So it should then re-render the screen.
    */
-  index: 0
+  index: 0,
+  /**
+   * ? To keep track of the answer that the user has selected.
+   */
+  answer: null,
+  points: 0
 }
 
 const quesReducer = (state, action) => {
@@ -32,13 +37,29 @@ const quesReducer = (state, action) => {
       return { ...state, status: 'error' }
     case 'ACTIVE':
       return { ...state, status: 'active' }
+    case 'NEW_ANSWER':
+      {
+        /**
+         * ? We only want to update user's points if only user has selected anwsers of the questions.
+         * ? To keep track of that, first, we take the current question object out of questions array.
+         * ? Then check user's selected answer and question's correct option are matched or not.
+         * ? If so, we add the question's points to user's points.
+         * ? If not, user's points will not be updated.
+         */
+        const question = state.questions.at(state.index)
+        return {
+          ...state,
+          answer: action.payload,
+          points: action.payload === question.correctOption ? state.points + question.points : state.points
+        }
+      }
     default:
       return state
   }
 }
 
 export default function App() {
-  const [{ questions, status, index }, dispatch] = useReducer(quesReducer, initialState)
+  const [{ questions, status, index, answer }, dispatch] = useReducer(quesReducer, initialState)
 
   const numQuestions = questions.length
 
@@ -65,7 +86,7 @@ export default function App() {
         {status === 'loading' && <Loader />}
         {status === 'error' && <Error />}
         {status === 'ready' && <StartScreen dispatch={dispatch} numQuestions={numQuestions} />}
-        {status === 'active' && <Question question={questions[index]} />}
+        {status === 'active' && <Question question={questions[index]} dispatch={dispatch} answer={answer} />}
       </Main>
     </div>
   )
