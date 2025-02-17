@@ -6,6 +6,7 @@ import Error from './components/quiz/status/Error'
 import { useReducer } from 'react'
 import axios from 'axios'
 import StartScreen from './components/quiz/ui/StartScreen'
+import Question from './components/quiz/ui/Question'
 
 const api = import.meta.env.VITE_API_URL
 const initialState = {
@@ -20,6 +21,8 @@ const quesReducer = (state, action) => {
       return { ...state, questions: action.payload, status: 'ready' }
     case 'DATA_FAILED':
       return { ...state, status: 'error' }
+    case 'ACTIVE':
+      return { ...state, status: 'active' }
     default:
       return state
   }
@@ -51,7 +54,8 @@ export default function App() {
       <Main>
         {status === 'loading' && <Loader />}
         {status === 'error' && <Error />}
-        {status === 'ready' && <StartScreen numQuestions={numQuestions} />}
+        {status === 'ready' && <StartScreen dispatch={dispatch} numQuestions={numQuestions} />}
+        {status === 'active' && <Question />}
       </Main>
     </div>
   )
