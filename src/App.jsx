@@ -7,8 +7,9 @@ import { useReducer } from 'react'
 import axios from 'axios'
 import StartScreen from './components/quiz/ui/StartScreen'
 import Question from './components/quiz/ui/ques/Question'
-import NextButton from './components/quiz/ui/NextButton'
-import Progress from './components/quiz/ui/Progress'
+import NextButton from './components/quiz/ui/ques/NextButton'
+import Progress from './components/quiz/ui/ques/Progress'
+import FinishedScreen from './components/quiz/ui/FinishedScreen'
 
 const api = import.meta.env.VITE_API_URL
 const initialState = {
@@ -28,7 +29,8 @@ const initialState = {
    * ? To keep track of the answer that the user has selected.
    */
   answer: null,
-  points: 0
+  points: 0,
+  highScore: 0
 }
 
 const quesReducer = (state, action) => {
@@ -57,13 +59,19 @@ const quesReducer = (state, action) => {
       }
     case "NEXT_QUESTION":
       return { ...state, index: state.index + 1, answer: null }
+    case "FINISHED":
+      /**
+       * ? The best time to update user's high score is when user finishes the quizzes.
+       * ? If user's points is greater than user's high score, then we update user's high score after everytime user finishes the quizzes.
+       */
+      return { ...state, status: 'finished', highScore: state.points > state.highScore ? state.points : state.highScore }
     default:
       return state
   }
 }
 
 export default function App() {
-  const [{ questions, status, index, answer, points }, dispatch] = useReducer(quesReducer, initialState)
+  const [{ questions, status, index, answer, points, highScore }, dispatch] = useReducer(quesReducer, initialState)
 
   const numQuestions = questions.length
 
@@ -97,9 +105,10 @@ export default function App() {
           <>
             <Progress index={index} numQuestions={numQuestions} points={points} maxPossiblePoints={maxPossiblePoints} answer={answer} />
             <Question question={questions[index]} dispatch={dispatch} answer={answer} />
-            <NextButton dispatch={dispatch} answer={answer} />
+            <NextButton dispatch={dispatch} answer={answer} index={index} numQuestions={numQuestions} />
           </>
         }
+        {status === 'finished' && <FinishedScreen points={points} maxPossiblePoints={maxPossiblePoints} highScore={highScore} />}
       </Main>
     </div>
   )
