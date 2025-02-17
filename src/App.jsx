@@ -7,6 +7,7 @@ import { useReducer } from 'react'
 import axios from 'axios'
 import StartScreen from './components/quiz/ui/StartScreen'
 import Question from './components/quiz/ui/ques/Question'
+import NextButton from './components/quiz/ui/NextButton'
 
 const api = import.meta.env.VITE_API_URL
 const initialState = {
@@ -53,6 +54,8 @@ const quesReducer = (state, action) => {
           points: action.payload === question.correctOption ? state.points + question.points : state.points
         }
       }
+    case "NEXT_QUESTION":
+      return { ...state, index: state.index + 1, answer: null }
     default:
       return state
   }
@@ -86,7 +89,10 @@ export default function App() {
         {status === 'loading' && <Loader />}
         {status === 'error' && <Error />}
         {status === 'ready' && <StartScreen dispatch={dispatch} numQuestions={numQuestions} />}
-        {status === 'active' && <Question question={questions[index]} dispatch={dispatch} answer={answer} />}
+        {status === 'active' && <>
+          <Question question={questions[index]} dispatch={dispatch} answer={answer} />
+          <NextButton dispatch={dispatch} answer={answer} />
+        </>}
       </Main>
     </div>
   )
