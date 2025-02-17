@@ -1,9 +1,13 @@
-import DateCounter from './components/DateCounter'
+import Header from './components/quiz/Header'
+import Main from './components/quiz/Main'
 
 export default function App() {
   return (
-    <div>
-      <DateCounter />
+    <div className="app">
+      <Header />
+      <Main>
+
+      </Main>
     </div>
   )
 }
