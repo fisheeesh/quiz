@@ -65,6 +65,8 @@ const quesReducer = (state, action) => {
        * ? If user's points is greater than user's high score, then we update user's high score after everytime user finishes the quizzes.
        */
       return { ...state, status: 'finished', highScore: state.points > state.highScore ? state.points : state.highScore }
+    case "RESTART":
+      return { ...initialState, highScore: state.highScore, questions: state.questions, status: 'ready' }
     default:
       return state
   }
@@ -108,7 +110,7 @@ export default function App() {
             <NextButton dispatch={dispatch} answer={answer} index={index} numQuestions={numQuestions} />
           </>
         }
-        {status === 'finished' && <FinishedScreen points={points} maxPossiblePoints={maxPossiblePoints} highScore={highScore} />}
+        {status === 'finished' && <FinishedScreen points={points} maxPossiblePoints={maxPossiblePoints} highScore={highScore} dispatch={dispatch} />}
       </Main>
     </div>
   )
