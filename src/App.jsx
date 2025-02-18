@@ -10,7 +10,10 @@ import Question from './components/quiz/ui/ques/Question'
 import NextButton from './components/quiz/ui/ques/NextButton'
 import Progress from './components/quiz/ui/ques/Progress'
 import FinishedScreen from './components/quiz/ui/FinishedScreen'
+import Footer from './components/quiz/ui/Footer'
+import Timer from './components/quiz/ui/ques/Timer'
 
+const SECS_PER_QUES = 30
 const api = import.meta.env.VITE_API_URL
 const initialState = {
   questions: [],
@@ -30,7 +33,8 @@ const initialState = {
    */
   answer: null,
   points: 0,
-  highScore: 0
+  highScore: JSON.parse(localStorage.getItem('highScore')) || 0,
+  secondRemaining: null
 }
 
 const quesReducer = (state, action) => {
@@ -40,7 +44,7 @@ const quesReducer = (state, action) => {
     case 'DATA_FAILED':
       return { ...state, status: 'error' }
     case 'ACTIVE':
-      return { ...state, status: 'active' }
+      return { ...state, status: 'active', secondRemaining: state.questions.length * SECS_PER_QUES }
     case 'NEW_ANSWER':
       {
         /**
@@ -64,16 +68,22 @@ const quesReducer = (state, action) => {
        * ? The best time to update user's high score is when user finishes the quizzes.
        * ? If user's points is greater than user's high score, then we update user's high score after everytime user finishes the quizzes.
        */
-      return { ...state, status: 'finished', highScore: state.points > state.highScore ? state.points : state.highScore }
+      {
+        const newHighScore = state.points > state.highScore ? state.points : state.highScore;
+        localStorage.setItem('highScore', JSON.stringify(newHighScore));
+        return { ...state, status: 'finished', highScore: newHighScore };
+      }
     case "RESTART":
       return { ...initialState, highScore: state.highScore, questions: state.questions, status: 'ready' }
+    case "TICK":
+      return { ...state, secondRemaining: state.secondRemaining - 1, status: state.secondRemaining === 0 ? 'finished' : state.status }
     default:
       return state
   }
 }
 
 export default function App() {
-  const [{ questions, status, index, answer, points, highScore }, dispatch] = useReducer(quesReducer, initialState)
+  const [{ questions, status, index, answer, points, highScore, secondRemaining }, dispatch] = useReducer(quesReducer, initialState)
 
   const numQuestions = questions.length
 
@@ -107,7 +117,10 @@ export default function App() {
           <>
             <Progress index={index} numQuestions={numQuestions} points={points} maxPossiblePoints={maxPossiblePoints} answer={answer} />
             <Question question={questions[index]} dispatch={dispatch} answer={answer} />
-            <NextButton dispatch={dispatch} answer={answer} index={index} numQuestions={numQuestions} />
+            <Footer>
+              <Timer secondRemaining={secondRemaining} dispatch={dispatch} />
+              <NextButton dispatch={dispatch} answer={answer} index={index} numQuestions={numQuestions} />
+            </Footer>
           </>
         }
         {status === 'finished' && <FinishedScreen points={points} maxPossiblePoints={maxPossiblePoints} highScore={highScore} dispatch={dispatch} />}
