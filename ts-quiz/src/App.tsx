@@ -1,35 +1,40 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import Error from "./components/status/Error";
+import Loader from "./components/status/Loader";
+import FinishedScreen from "./components/ui/FinishedScreen";
+import Footer from "./components/ui/Footer";
+import Header from "./components/ui/Header";
+import Main from "./components/ui/Main";
+import NextButton from "./components/ui/NextButton";
+import Progress from "./components/ui/Progress";
+import Question from "./components/ui/Question";
+import StartScreen from "./components/ui/StartScreen";
+import Timer from "./components/ui/Timer";
+import useApp from "./hooks/useApp";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const { state } = useApp()
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="app">
+      <Header />
+      <Main>
+        {state.status === 'loading' && <Loader />}
+        {state.status === 'error' && <Error />}
+        {state.status === 'ready' && <StartScreen />}
+        {state.status === 'active' &&
+          <>
+            <Progress />
+            <Question />
+            <Footer>
+              {state.answer !== null && <NextButton />}
+              <Timer />
+            </Footer>
+          </>
+        }
+        {
+          state.status === 'finished' && <FinishedScreen />
+        }
+      </Main>
+    </div>
   )
 }
-
-export default App
