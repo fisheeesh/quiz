@@ -12,7 +12,7 @@ The **Mini-Quizz App** is a React-based quiz application designed to help users 
 - **Highest score retention** to showcase the all-time best performance.
 - **Global state management** using `useReducer` and Context API.
 - **Fake API** powered by `json-server` for fetching quiz questions.
-- **Emphasis on `useReducer`** over `useState` for state management.
+- **Focus on `useReducer`** over `useState` for state management.
 
 I built this app to enhance my understanding of `useReducer` and Context API in a practical scenario.
 
