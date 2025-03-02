@@ -1,9 +1,7 @@
 import { useSelector } from "react-redux"
 
 export default function Progress() {
-    const { questions, index, points, answer } = useSelector(store => store.question)
-    const numQuestions = questions.length
-    const maxPossiblePoints = questions.reduce((total, ques) => total + ques.points, 0)
+    const { maxPossiblePoints, numQuestions, index, points, answer } = useSelector(store => store.question)
 
     return (
         <div className='progress'>

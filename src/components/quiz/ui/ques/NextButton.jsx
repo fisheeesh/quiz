@@ -2,10 +2,10 @@ import { useDispatch, useSelector } from "react-redux"
 import { finished, nextQues } from "../../../../features/ques/quesSlice"
 
 export default function NextButton() {
-    const { questions, index } = useSelector(store => store.question)
+    const { numQuestions, index } = useSelector(store => store.question)
     const dispatch = useDispatch()
 
-    const isLastQuestion = questions.length - 1 === index
+    const isLastQuestion = numQuestions - 1 === index
 
     const onHandleClick = () => {
         if (isLastQuestion) dispatch(finished())

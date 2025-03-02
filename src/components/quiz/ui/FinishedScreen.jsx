@@ -2,10 +2,8 @@ import { useDispatch, useSelector } from "react-redux"
 import { restart } from "../../../features/ques/quesSlice";
 
 export default function FinishedScreen() {
-    const { questions, points, highScore } = useSelector(store => store.question)
+    const { maxPossiblePoints, points, highScore } = useSelector(store => store.question)
     const dispatch = useDispatch()
-
-    const maxPossiblePoints = questions.reduce((total, ques) => total + ques.points, 0)
 
     const percentage = points / maxPossiblePoints * 100
 

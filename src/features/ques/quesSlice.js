@@ -1,14 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const SEC_PER_QUES = 5;
+const SEC_PER_QUES = 15;
 
 const initialState = {
     questions: [],
+    numQuestions: 0,
+    maxPossiblePoints: 0,
     status: "loading",
     index: 0,
     answer: null,
     points: 0,
-    highScore: null,
+    highScore: 0,
     secondRemaining: null
 };
 
@@ -19,6 +21,8 @@ const quesSlice = createSlice({
         loaded(state, action) {
             state.questions = action.payload;
             state.status = "ready";
+            state.numQuestions = state.questions.length;
+            state.maxPossiblePoints = state.questions.reduce((acc, ques) => acc + ques.points, 0);
         },
         error(state) {
             state.status = "error";
@@ -40,13 +44,15 @@ const quesSlice = createSlice({
         },
         finished(state) {
             state.status = "finished";
-            state.highScore = Math.max(state.highScore ?? 0, state.points);
+            state.highScore = Math.max(state.highScore, state.points);
         },
         restart(state) {
             return {
                 ...initialState,
                 highScore: state.highScore, 
                 questions: state.questions,
+                maxPossiblePoints: state.maxPossiblePoints,
+                numQuestions: state.numQuestions,
                 status: "ready"
             };
         },
@@ -56,7 +62,7 @@ const quesSlice = createSlice({
             }
             if (state.secondRemaining === 0) {
                 state.status = "finished";
-                state.highScore = Math.max(state.highScore ?? 0, state.points);
+                state.highScore = Math.max(state.highScore, state.points);
             }
         }
     }
