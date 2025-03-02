@@ -1,11 +1,19 @@
-/* eslint-disable react/prop-types */
-export default function Progress({ index, numQuestions, points, maxPossiblePoints, answer }) {
-    return (
-        <header className="progress">
-            <progress max={numQuestions} value={index + Number(answer !== null)} />
+import { useSelector } from "react-redux"
 
-            <p>Questions <strong>{index + 1}</strong> / {numQuestions}</p>
-            <p><strong>{points}</strong> / {maxPossiblePoints}</p>
-        </header>
+export default function Progress() {
+    const { questions, index, points, answer } = useSelector(store => store.question)
+    const numQuestions = questions.length
+    const maxPossiblePoints = questions.reduce((total, ques) => total + ques.points, 0)
+
+    return (
+        <div className='progress'>
+            <progress max={numQuestions} value={index + Number(answer !== null)} />
+            <p>
+                Question: <strong>{index + 1}</strong> / {numQuestions}
+            </p>
+            <p>
+                Points: <strong>{points}</strong> / {maxPossiblePoints}
+            </p>
+        </div>
     )
 }

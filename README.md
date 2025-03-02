@@ -16,7 +16,7 @@ The **Mini-Quizz App** is a React-based quiz application designed to help users 
 
 I built this app to enhance my understanding of `useReducer` and Context API in a practical scenario.
 
-You can check out the **TypeScript version** in the `fisheeesh` branch.
+**TypeScript version** in the `fisheeesh` branch.
 
 ## Installation
 

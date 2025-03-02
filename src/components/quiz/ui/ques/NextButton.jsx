@@ -1,14 +1,21 @@
-/* eslint-disable react/prop-types */
-export default function NextButton({ dispatch, answer, index, numQuestions }) {
-    const isLastQuestion = index === numQuestions - 1
-    if (answer === null) return
+import { useDispatch, useSelector } from "react-redux"
+import { finished, nextQues } from "../../../../features/ques/quesSlice"
 
-    const handleNextQuestion = () => {
-        if (isLastQuestion) dispatch({ type: 'FINISHED' })
-        else dispatch({ type: 'NEXT_QUESTION' })
+export default function NextButton() {
+    const { questions, index } = useSelector(store => store.question)
+    const dispatch = useDispatch()
+
+    const isLastQuestion = questions.length - 1 === index
+
+    const onHandleClick = () => {
+        if (isLastQuestion) dispatch(finished())
+        else dispatch(nextQues())
     }
+
     return (
-        <button className="btn btn-ui" onClick={handleNextQuestion}>
+        <button
+            onClick={onHandleClick}
+            className='btn btn-ui'>
             {isLastQuestion ? 'Finish' : 'Next'}
         </button>
     )

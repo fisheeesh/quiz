@@ -1,20 +1,27 @@
+import { useDispatch, useSelector } from "react-redux"
+import { newAnswer } from "../../../../features/ques/quesSlice"
+
 /* eslint-disable react/prop-types */
-export default function Options({ questions, dispatch, answer }) {
-    // ? To track if the user has already selected an answer or
+export default function Options({ question }) {
+    const { answer } = useSelector(store => store.question)
+    const dispatch = useDispatch()
+
+    //? To keep track user selected an answer or not
     const hasAnswered = answer !== null
+
     return (
         <div className="options">
             {
-                questions.options.map((opt, index) => (
+                question.options.map((opt, index) => (
                     <button
                         disabled={hasAnswered}
-                        onClick={() => dispatch({ type: 'NEW_ANSWER', payload: index })}
-                        className={`btn btn-option ${index === answer ? 'answer' : ''} ${hasAnswered ? index === questions.correctOption ? 'correct' : 'wrong' : ''}`}
-                        key={index}>
+                        key={index}
+                        onClick={() => dispatch(newAnswer(index))}
+                        className={`btn btn-option ${answer === index ? 'answer' : ''} ${hasAnswered ? index === question.correctOption ? 'correct' : 'wrong' : ''}`} >
                         {opt}
                     </button>
                 ))
             }
-        </div>
+        </div >
     )
 }
